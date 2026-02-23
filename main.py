@@ -402,3 +402,39 @@ def main():
 
 if __name__ == "__main__":
     main()
+def main():
+    st.title("🏔️ Иркутская область в 3D (CesiumJS)")
+    
+    # Пытаемся получить токен из разных источников
+    cesium_token = None
+    
+    # 1. Из Streamlit secrets (для облачного деплоя)
+    try:
+        cesium_token = st.secrets.get("cesium_token", "")
+    except:
+        pass
+    
+    # 2. Из переменных окружения
+    if not cesium_token:
+        import os
+        cesium_token = os.environ.get("CESIUM_TOKEN", "")
+    
+    # Создание боковой панели
+    with st.sidebar:
+        st.header("ℹ️ Информация")
+        # ... остальной код ...
+        
+        st.subheader("🔑 Настройки Cesium")
+        
+        # 3. Ручной ввод как запасной вариант
+        manual_token = st.text_input(
+            "Cesium Ion Token:", 
+            value=cesium_token,
+            type="password",
+            help="Вставьте ваш токен от Cesium Ion. Получите на cesium.com/ion"
+        )
+        
+        if manual_token:
+            cesium_token = manual_token
+            st.session_state["cesium_token"] = manual_token
+            st.success("✅ Токен установлен!")
