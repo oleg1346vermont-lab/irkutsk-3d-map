@@ -102,10 +102,11 @@ def generate_cesium_html(cesium_token):
     # Создаем JavaScript код для добавления сущностей
     entities_js = ""
     
-    # Добавление городов
+    # Добавление городов (без изменений)
     for city in settlements:
         color = "#FF4444" if city["type"] == "город" else "#FFA500"
         pixel_size = 10 if city["population"] > 100000 else 8
+        description = f"{city['name']}<br>Население: {city['population']:,} чел.<br>Тип: {city['type']}"
         
         entities_js += f"""
             viewer.entities.add({{
@@ -128,11 +129,11 @@ def generate_cesium_html(cesium_token):
                     pixelOffset: new Cesium.Cartesian2(0, -10),
                     heightReference: Cesium.HeightReference.CLAMP_TO_GROUND
                 }},
-                description: '{city['name']}<br>Население: {city['population']:,} чел.<br>Тип: {city['type']}'
+                description: `{description}`
             }});
         """
     
-    # Добавление аэропортов
+    # Добавление аэропортов (без изменений)
     for airport in airports:
         entities_js += f"""
             viewer.entities.add({{
@@ -148,7 +149,7 @@ def generate_cesium_html(cesium_token):
             }});
         """
     
-    # Добавление речных портов
+    # Добавление речных портов (без изменений)
     for port in river_ports:
         entities_js += f"""
             viewer.entities.add({{
@@ -164,7 +165,7 @@ def generate_cesium_html(cesium_token):
             }});
         """
     
-    # Добавление железнодорожных станций
+    # Добавление железнодорожных станций (без изменений)
     for station in railway_stations:
         entities_js += f"""
             viewer.entities.add({{
@@ -180,23 +181,24 @@ def generate_cesium_html(cesium_token):
             }});
         """
     
-    # Добавление рек
-    for river in rivers:
+    # Добавление рек (ИСПРАВЛЕНО - используем индексы вместо русских названий)
+    for i, river in enumerate(rivers):
+        river_id = f"river_{i}"
         positions = ", ".join([f"{{lon: {coord[1]}, lat: {coord[0]}}}" for coord in river["coords"]])
         entities_js += f"""
-            var riverPositions_{river['name']} = [{positions}];
-            var riverPoints_{river['name']} = [];
-            for (var i = 0; i < riverPositions_{river['name']}.length; i++) {{
-                riverPoints_{river['name']}.push(Cesium.Cartesian3.fromDegrees(
-                    riverPositions_{river['name']}[i].lon,
-                    riverPositions_{river['name']}[i].lat,
+            var {river_id}Positions = [{positions}];
+            var {river_id}Points = [];
+            for (var j = 0; j < {river_id}Positions.length; j++) {{
+                {river_id}Points.push(Cesium.Cartesian3.fromDegrees(
+                    {river_id}Positions[j].lon,
+                    {river_id}Positions[j].lat,
                     0
                 ));
             }}
             viewer.entities.add({{
                 name: '{river['name']}',
                 polyline: {{
-                    positions: riverPoints_{river['name']},
+                    positions: {river_id}Points,
                     width: 3,
                     material: Cesium.Color.fromCssColorString('#1E90FF'),
                     clampToGround: true
@@ -204,23 +206,24 @@ def generate_cesium_html(cesium_token):
             }});
         """
     
-    # Добавление железных дорог
-    for line in railway_lines:
+    # Добавление железных дорог (ИСПРАВЛЕНО - используем индексы вместо русских названий)
+    for i, line in enumerate(railway_lines):
+        line_id = f"rail_{i}"
         positions = ", ".join([f"{{lon: {coord[1]}, lat: {coord[0]}}}" for coord in line["coords"]])
         entities_js += f"""
-            var railPositions_{line['name']} = [{positions}];
-            var railPoints_{line['name']} = [];
-            for (var i = 0; i < railPositions_{line['name']}.length; i++) {{
-                railPoints_{line['name']}.push(Cesium.Cartesian3.fromDegrees(
-                    railPositions_{line['name']}[i].lon,
-                    railPositions_{line['name']}[i].lat,
+            var {line_id}Positions = [{positions}];
+            var {line_id}Points = [];
+            for (var j = 0; j < {line_id}Positions.length; j++) {{
+                {line_id}Points.push(Cesium.Cartesian3.fromDegrees(
+                    {line_id}Positions[j].lon,
+                    {line_id}Positions[j].lat,
                     50
                 ));
             }}
             viewer.entities.add({{
                 name: '{line['name']}',
                 polyline: {{
-                    positions: railPoints_{line['name']},
+                    positions: {line_id}Points,
                     width: 4,
                     material: Cesium.Color.fromCssString('#8B0000'),
                     clampToGround: false
@@ -228,7 +231,7 @@ def generate_cesium_html(cesium_token):
             }});
         """
     
-    # Добавление озера Байкал
+    # Добавление озера Байкал (без изменений)
     baikal_coords = [
         [51.5, 104.0], [52.5, 106.5], [54.5, 109.5],
         [55.5, 109.5], [55.5, 108.0], [51.5, 104.0]
