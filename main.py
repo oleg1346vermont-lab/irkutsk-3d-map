@@ -273,8 +273,8 @@ def generate_cesium_html(cesium_token):
             #cesiumContainer {{ width: 100%; height: 100vh; position: absolute; top: 0; left: 0; }}
             .cesium-infoBox {{ max-width: 300px; }}
         </style>
-        <link href="https://cesium.com/downloads/cesiumjs/releases/1.115/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
-        <script src="https://cesium.com/downloads/cesiumjs/releases/1.115/Build/Cesium/Cesium.js"></script>
+        <link href="https://unpkg.com/cesium@latest/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+        <script src="https://unpkg.com/cesium@latest/Build/Cesium/Cesium.js"></script>
     </head>
     <body>
         <div id="cesiumContainer"></div>
